@@ -7,7 +7,6 @@ from io import BytesIO
 def resize_image(image, width, height):
     input_image = Image.open(image)
     resized_image = input_image.resize((width, height)).convert('RGB')
-
     with BytesIO() as buffer:
         resized_image.save(buffer, format="JPEG")
         data = buffer.getvalue()

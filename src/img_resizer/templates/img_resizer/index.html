@@ -8,7 +8,7 @@
         <p>Нет доступных изображений</p>    
     {% else %}
         {% for image in images %}
-            <div class="col-md-4">
+            <div>
             <a href={% url 'image_view' image.get_hash %} > {{ image.image.name }}</a>
             </div>
         {% endfor%}
@@ -18,7 +18,7 @@
 
 <footer>
     <div>
-        <a href="/img_resizer/upload/">Добавить изображение</a>
+        <p><a href="/img_resizer/upload/">Добавить изображение</a></p>
     </div>
 </footer>
 
