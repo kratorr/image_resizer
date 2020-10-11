@@ -5,8 +5,8 @@ import hashlib
 
 class UploadedImage(models.Model):
     image = models.ImageField()
-    input_url = models.TextField(blank=True)
-    image_hash = models.CharField(unique=True, max_length=32, default='DEFAULT VALUE')
+    input_url = models.URLField(blank=True)
+    image_hash = models.CharField(unique=True, max_length=32)
     created_time = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

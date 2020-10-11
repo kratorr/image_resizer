@@ -4,22 +4,15 @@ from tempfile import NamedTemporaryFile
 from io import BytesIO
 
 
-def resize_image(image, width, height, size_limit):
+def resize_image(image, width, height):
     input_image = Image.open(image)
     resized_image = input_image.resize((width, height)).convert('RGB')
-    tmpfile = NamedTemporaryFile()
-    out = BytesIO()
-    resized_image.save(out, format='JPEG')
-    quality = 75
+
     with BytesIO() as buffer:
-            resized_image.save(buffer, format="JPEG")
-            data = buffer.getvalue()
-    filesize = len(data)
+        resized_image.save(buffer, format="JPEG")
+        data = buffer.getvalue()
+    return data
 
-    return tmpfile.name + '.jpg'
-
-    
-    
 
 def download_image(url):
     request = requests.get(url, stream=True)

@@ -7,4 +7,4 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('upload/', views.upload, name='upload'),
     path('<str:image_hash>/', views.image_view, name='image_view')
-] 
+]
