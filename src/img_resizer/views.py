@@ -1,7 +1,6 @@
 import base64
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
 from django.core.files.base import ContentFile
 
 from .forms import ImageUploadForm, ResizeForm
