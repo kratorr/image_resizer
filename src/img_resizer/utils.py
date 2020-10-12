@@ -5,6 +5,10 @@ from io import BytesIO
 
 
 def resize_image(image, width, height):
+    if width:
+        width = int(width)
+    if height:
+        height = int(height)
     input_image = Image.open(image)
     resized_image = input_image.resize((width, height)).convert('RGB')
     with BytesIO() as buffer:
