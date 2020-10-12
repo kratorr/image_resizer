@@ -7,6 +7,12 @@
 </form>
 
 
+{% if resized %}
 
+<img src = "data:image/png;base64,{{image}}"/>
+
+{%  elif not resized %}
 
 <img src={{ image.image.url }}>
+
+{% endif %}
