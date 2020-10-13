@@ -4,13 +4,23 @@ from tempfile import NamedTemporaryFile
 from io import BytesIO
 
 
-def resize_image(image, width, height):
-    if width:
-        width = int(width)
-    if height:
-        height = int(height)
-    input_image = Image.open(image)
-    resized_image = input_image.resize((width, height)).convert('RGB')
+def resize_image(source_image, width, height):
+    image = Image.open(source_image)
+    if not width or not height:
+        source_width, source_height = image.size
+        if width:
+            new_height = width * source_height / source_width
+            new_size = (int(width), int(new_height))
+        if height:
+            new_width = height * source_width / source_height
+            new_size = (int(new_width), int(height))
+
+        resized_image = image.resize(new_size).convert('RGB')
+
+    else:
+        print(width, height)
+        resized_image = image.resize((int(width), int(height))).convert('RGB')
+
     with BytesIO() as buffer:
         resized_image.save(buffer, format="JPEG")
         data = buffer.getvalue()

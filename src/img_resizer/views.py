@@ -39,7 +39,6 @@ def image_view(request, image_hash):
         if form.is_valid():
             width = form.cleaned_data['width']
             height = form.cleaned_data['height']
-            # TODO при передаче одного параметра(ширина или высота) во время ресайза соблюдать пропорции
             resized_image_bytes = resize_image(image.image, width, height)
             resized_image = base64.b64encode(resized_image_bytes).decode('utf-8')
             return render(request, 'img_resizer/image_view.html', {'image': resized_image, 'form': form, 'resized': True})
