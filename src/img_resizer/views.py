@@ -34,6 +34,9 @@ def upload(request):
 
 def image_view(request, image_hash):
     image = UploadedImage.objects.get(image_hash=image_hash)
+    if request.method == 'GET':
+        width, height = image.image.width, image.image.height
+        resized = False
     if request.method == 'POST':
         form = ResizeForm(request.POST)
         if form.is_valid():
@@ -41,6 +44,7 @@ def image_view(request, image_hash):
             height = form.cleaned_data['height']
             resized_image_bytes = resize_image(image.image, width, height)
             resized_image = base64.b64encode(resized_image_bytes).decode('utf-8')
-            return render(request, 'img_resizer/image_view.html', {'image': resized_image, 'form': form, 'resized': True})
-    form = ResizeForm(initial={'height': image.image.height, 'width': image.image.width})
-    return render(request, 'img_resizer/image_view.html', {'image': image, 'form': form, 'resized': False})
+            image = resized_image
+            resized = True
+    form = ResizeForm(initial={'height': height, 'width': width})
+    return render(request, 'img_resizer/image_view.html', {'image': image, 'form': form, 'resized': resized})

@@ -18,7 +18,6 @@ def resize_image(source_image, width, height):
         resized_image = image.resize(new_size).convert('RGB')
 
     else:
-        print(width, height)
         resized_image = image.resize((int(width), int(height))).convert('RGB')
 
     with BytesIO() as buffer:
