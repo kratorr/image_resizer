@@ -2,6 +2,8 @@ from django import forms
 
 import requests
 
+from .models import UploadedImage
+
 class ImageUploadForm(forms.Form):
     url = forms.URLField(label='Ссылка', required=False)
     file_input = forms.FileField(label='Файл', required=False)
@@ -15,7 +17,6 @@ class ImageUploadForm(forms.Form):
             raise forms.ValidationError('Выберите только один варинат')
         if url is '' and file_input is None:
             raise forms.ValidationError('Выберите хотя бы один вариант')
-
 
         return cleaned_data
 

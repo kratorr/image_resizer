@@ -4,8 +4,9 @@ from tempfile import NamedTemporaryFile
 from io import BytesIO
 
 
-def resize_image(source_image, width, height):
+def resize_image(source_image, width, height, format):
     image = Image.open(source_image)
+    print(image)
     if not width or not height:
         source_width, source_height = image.size
         if width:
@@ -15,19 +16,20 @@ def resize_image(source_image, width, height):
             new_width = height * source_width / source_height
             new_size = (int(new_width), int(height))
 
-        resized_image = image.resize(new_size).convert('RGB')
+        resized_image = image.resize(new_size)
 
     else:
-        resized_image = image.resize((int(width), int(height))).convert('RGB')
+        resized_image = image.resize((int(width), int(height)))
 
     with BytesIO() as buffer:
-        resized_image.save(buffer, format="JPEG")
+        resized_image.save(buffer, format=format)
         data = buffer.getvalue()
     return data
 
 
 def download_image(url):
-    request = requests.get(url, stream=True)
-    file_name = url.split('/')[-1]
-    image = request.content
-    return image, file_name
+    response = requests.get(url, stream=True)
+    if response.ok:
+        file_name = url.split('/')[-1]
+        image = response.content
+        return image, file_name

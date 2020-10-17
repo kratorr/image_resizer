@@ -19,13 +19,15 @@ def upload(request):
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             if request.FILES:
+                # TODO валидировать что по урлу лежит именно изображние
                 new_image = UploadedImage(image=request.FILES['file_input'])
                 new_image.save()
             if request.POST['url']:
-                # TODO валидировать что по урлу лежит именно изображние
+                # TODO валидировать повторяющеся картинки
                 downloaded_image, file_name = download_image(request.POST['url'])
                 new_image = UploadedImage(input_url=form.cleaned_data['url'])
                 new_image.image.save(file_name, ContentFile(downloaded_image), save=True)
+
             return redirect('image_view', image_hash=new_image.image_hash)
     else:
         form = ImageUploadForm()
@@ -42,7 +44,7 @@ def image_view(request, image_hash):
         if form.is_valid():
             width = form.cleaned_data['width']
             height = form.cleaned_data['height']
-            resized_image_bytes = resize_image(image.image, width, height)
+            resized_image_bytes = resize_image(image.image, width, height, format="JPEG")
             resized_image = base64.b64encode(resized_image_bytes).decode('utf-8')
             image = resized_image
             resized = True
