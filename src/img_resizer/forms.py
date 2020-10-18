@@ -1,9 +1,12 @@
-from django import forms
-
 import requests
 import hashlib
 
+
+from django import forms
+
+
 from .models import UploadedImage
+from .utils import download_image
 
 
 class ImageUploadForm(forms.Form):
@@ -19,28 +22,42 @@ class ImageUploadForm(forms.Form):
             raise forms.ValidationError('Выберите только один варинат')
         if url is '' and file_input is None:
             raise forms.ValidationError('Выберите хотя бы один вариант')
-        return cleaned_data
 
     def clean_file_input(self):
-        data = self.cleaned_data['file_input'] 
-        hash_sha1 = hashlib.sha1()
-        for chunk in data.chunks():
-            hash_sha1.update(chunk)
-        image_hash = hash_sha1.hexdigest()
-        instance = UploadedImage.objects.filter(image_hash=image_hash)
-        if instance.exists():
-            raise forms.ValidationError("Изображение уже находится в базе")
+        data = self.cleaned_data['file_input']
+        if data:
+            hash_sha1 = hashlib.sha1()
+            for chunk in data.chunks():
+                hash_sha1.update(chunk)
+            image_hash = hash_sha1.hexdigest()
+            if  UploadedImage.objects.filter(image_hash=image_hash).exists():
+                raise forms.ValidationError("Изображение уже находится в базе")
+        return data
+
+    def clean_url(self):
+        data = self.cleaned_data['url']
+        image_formats = ("image/png", "image/jpeg", "image/jpg")
+        response = requests.head(data, stream=True)
+        if response.ok:
+            if response.headers["content-type"] not in image_formats:
+                raise forms.ValidationError("Неподдерживаемый формат изображения")
         return data
 
 
 class ResizeForm(forms.Form):
-    width = forms.IntegerField(label='Ширина', min_value=1, required=False)
-    height = forms.IntegerField(label='Высота', min_value=1, required=False)
+    width = forms.IntegerField(label='Ширина' , required=False)
+    height = forms.IntegerField(label='Высота', required=False)
 
+    def clean_width(self):
+        data = self.cleaned_data['width']
+        print(data)
+        if int(data) <= 0:
+            raise forms.ValidationError("Размер меньше или равен 0")
+        return data
 
-def is_url_image(image_url):
-   image_formats = ("image/png", "image/jpeg", "image/jpg")
-   r = requests.head(image_url)
-   if r.headers["content-type"] in image_formats:
-      return True
-   return False
+    def clean_height(self):
+        data = self.cleaned_data['height']
+        print(data)
+        if int(data) <= 0:
+            raise forms.ValidationError("Размер меньше или равен 0")
+        return data

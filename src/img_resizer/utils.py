@@ -4,7 +4,6 @@ from tempfile import NamedTemporaryFile
 from io import BytesIO
 
 
-
 def resize_image(source_image, width, height, format):
     image = Image.open(source_image)
     size = (width, height)
@@ -29,8 +28,10 @@ def resize_image(source_image, width, height, format):
 
 
 def download_image(url):
+    image_formats = ("image/png", "image/jpeg", "image/jpg")
     response = requests.get(url, stream=True)
     if response.ok:
-        file_name = url.split('/')[-1]
-        image = response.content
-        return image, file_name
+        if response.headers["content-type"] in image_formats:
+            file_name = url.split('/')[-1]
+            image = response.content
+            return image, file_name

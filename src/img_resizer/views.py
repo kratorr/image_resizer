@@ -22,7 +22,6 @@ def upload(request):
                 new_image = UploadedImage(image=request.FILES['file_input'])
                 new_image.save()
             if request.POST['url']:
-                # TODO валидировать повторяющеся картинки
                 # TODO валидировать что по урлу лежит именно изображние
                 downloaded_image, file_name = download_image(request.POST['url'])
                 new_image = UploadedImage(input_url=form.cleaned_data['url'])
@@ -36,9 +35,9 @@ def upload(request):
 
 def image_view(request, image_hash):
     image = UploadedImage.objects.get(image_hash=image_hash)
+    resized = False
     if request.method == 'GET':
         width, height = image.image.width, image.image.height
-        resized = False
     if request.method == 'POST':
         form = ResizeForm(request.POST)
         if form.is_valid():
@@ -48,5 +47,7 @@ def image_view(request, image_hash):
             resized_image = base64.b64encode(resized_image_bytes).decode('utf-8')
             image = resized_image
             resized = True
+        else:
+            return render(request, 'img_resizer/image_view.html', context={'form': form, 'image': image, 'resized': resized})
     form = ResizeForm(initial={'height': height, 'width': width})
     return render(request, 'img_resizer/image_view.html', {'image': image, 'form': form, 'resized': resized})
