@@ -1,12 +1,13 @@
-from PIL import Image
+from PIL import Image, ImageOps
 import requests
 from tempfile import NamedTemporaryFile
 from io import BytesIO
 
 
+
 def resize_image(source_image, width, height, format):
     image = Image.open(source_image)
-    print(image)
+    size = (width, height)
     if not width or not height:
         source_width, source_height = image.size
         if width:
@@ -17,9 +18,9 @@ def resize_image(source_image, width, height, format):
             new_size = (int(new_width), int(height))
 
         resized_image = image.resize(new_size)
-
     else:
-        resized_image = image.resize((int(width), int(height)))
+        image.thumbnail(size)
+        resized_image = image
 
     with BytesIO() as buffer:
         resized_image.save(buffer, format=format)
