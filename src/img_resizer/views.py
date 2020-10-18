@@ -1,7 +1,6 @@
 import base64
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
 from django.core.files.base import ContentFile
 
 from .forms import ImageUploadForm, ResizeForm
@@ -27,6 +26,7 @@ def upload(request):
                 downloaded_image, file_name = download_image(request.POST['url'])
                 new_image = UploadedImage(input_url=form.cleaned_data['url'])
                 new_image.image.save(file_name, ContentFile(downloaded_image), save=True)
+
             return redirect('image_view', image_hash=new_image.image_hash)
     else:
         form = ImageUploadForm()
@@ -35,14 +35,19 @@ def upload(request):
 
 def image_view(request, image_hash):
     image = UploadedImage.objects.get(image_hash=image_hash)
+    resized = False
+    if request.method == 'GET':
+        width, height = image.image.width, image.image.height
     if request.method == 'POST':
         form = ResizeForm(request.POST)
         if form.is_valid():
             width = form.cleaned_data['width']
             height = form.cleaned_data['height']
-            # TODO при передаче одного параметра(ширина или высота) во время ресайза соблюдать пропорции
-            resized_image_bytes = resize_image(image.image, width, height)
+            resized_image_bytes = resize_image(image.image, width, height, format="JPEG")
             resized_image = base64.b64encode(resized_image_bytes).decode('utf-8')
-            return render(request, 'img_resizer/image_view.html', {'image': resized_image, 'form': form, 'resized': True})
-    form = ResizeForm(initial={'height': image.image.height, 'width': image.image.width})
-    return render(request, 'img_resizer/image_view.html', {'image': image, 'form': form, 'resized': False})
+            image = resized_image
+            resized = True
+        else:
+            return render(request, 'img_resizer/image_view.html', context={'form': form, 'image': image, 'resized': resized})
+    form = ResizeForm(initial={'height': height, 'width': width})
+    return render(request, 'img_resizer/image_view.html', {'image': image, 'form': form, 'resized': resized})

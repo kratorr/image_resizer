@@ -4,7 +4,7 @@ import hashlib
 
 
 class UploadedImage(models.Model):
-    image = models.ImageField()
+    image = models.ImageField(unique=True)
     input_url = models.URLField(blank=True)
     image_hash = models.CharField(unique=True, max_length=32)
     created_time = models.DateTimeField(auto_now_add=True)

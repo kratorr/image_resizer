@@ -1,6 +1,30 @@
-Запуск dev сервера:
 
-1. Создать виратульное окружение
-2. Установить зависимости pip3 install -r requirements.txt
-3. Применить миграции python3 manage.py migrate
-4. Запустить dev сервер python3 manage.py runserver
+
+# Ресайзер картинок
+
+Cервис для изменеия размера картинки
+
+# Как установить
+
+
+Для работы необоходим Python 3. 
+Установите зависимости с помощью pip:
+```bash
+pip install -r requirements.txt
+```
+Для лучшей изоляции  рекомендуется использовать виртуальное окружение.
+
+# Quickstart
+
+
+Применить миграции
+```bash
+$ cd src
+$ python3 manage.py migrate
+```
+
+Запуск dev сервера
+```bash
+$ python3 main.py
+```
+Сервис доступен по адресу: [localhost:8000](http://localhost:8000/)
