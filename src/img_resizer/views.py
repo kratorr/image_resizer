@@ -19,11 +19,11 @@ def upload(request):
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             if request.FILES:
-                # TODO валидировать что по урлу лежит именно изображние
                 new_image = UploadedImage(image=request.FILES['file_input'])
                 new_image.save()
             if request.POST['url']:
                 # TODO валидировать повторяющеся картинки
+                # TODO валидировать что по урлу лежит именно изображние
                 downloaded_image, file_name = download_image(request.POST['url'])
                 new_image = UploadedImage(input_url=form.cleaned_data['url'])
                 new_image.image.save(file_name, ContentFile(downloaded_image), save=True)
