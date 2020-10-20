@@ -25,6 +25,6 @@ $ python3 manage.py migrate
 
 Запуск dev сервера
 ```bash
-$ python3 main.py
+$ python3 manage.py runserver
 ```
 Сервис доступен по адресу: [localhost:8000](http://localhost:8000/)
