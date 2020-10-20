@@ -23,6 +23,14 @@ class ImageUploadForm(forms.Form):
         if url is '' and file_input is None:
             raise forms.ValidationError('Выберите хотя бы один вариант')
 
+        image_formats = ("image/png", "image/jpeg", "image/jpg")
+        if url:
+            response = requests.head(url, stream=True)
+            if response.ok:
+                if response.headers["content-type"] not in image_formats:
+                    raise forms.ValidationError("Неподдерживаемый формат изображения")
+
+
     def clean_file_input(self):
         data = self.cleaned_data['file_input']
         if data:
@@ -30,17 +38,8 @@ class ImageUploadForm(forms.Form):
             for chunk in data.chunks():
                 hash_sha1.update(chunk)
             image_hash = hash_sha1.hexdigest()
-            if  UploadedImage.objects.filter(image_hash=image_hash).exists():
-                raise forms.ValidationError("Изображение уже находится в базе")
-        return data
-
-    def clean_url(self):
-        data = self.cleaned_data['url']
-        image_formats = ("image/png", "image/jpeg", "image/jpg")
-        response = requests.head(data, stream=True)
-        if response.ok:
-            if response.headers["content-type"] not in image_formats:
-                raise forms.ValidationError("Неподдерживаемый формат изображения")
+            if UploadedImage.objects.filter(image_hash=image_hash).exists():
+             raise forms.ValidationError("Изображение уже находится в базе")
         return data
 
 

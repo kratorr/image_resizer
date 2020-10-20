@@ -22,7 +22,6 @@ def upload(request):
                 new_image = UploadedImage(image=request.FILES['file_input'])
                 new_image.save()
             if request.POST['url']:
-                # TODO валидировать что по урлу лежит именно изображние
                 downloaded_image, file_name = download_image(request.POST['url'])
                 new_image = UploadedImage(input_url=form.cleaned_data['url'])
                 new_image.image.save(file_name, ContentFile(downloaded_image), save=True)
@@ -43,11 +42,13 @@ def image_view(request, image_hash):
         if form.is_valid():
             width = form.cleaned_data['width']
             height = form.cleaned_data['height']
-            resized_image_bytes = resize_image(image.image, width, height, format="JPEG")
+            resized_image_bytes = resize_image(image.image, width, height, format="JPEG") # TODO сохранять в исходном фмт.
             resized_image = base64.b64encode(resized_image_bytes).decode('utf-8')
             image = resized_image
             resized = True
         else:
-            return render(request, 'img_resizer/image_view.html', context={'form': form, 'image': image, 'resized': resized})
+            return render(request, 'img_resizer/image_view.html',
+                          context={'form': form, 'image': image, 'resized': resized}
+                    )
     form = ResizeForm(initial={'height': height, 'width': width})
     return render(request, 'img_resizer/image_view.html', {'image': image, 'form': form, 'resized': resized})
