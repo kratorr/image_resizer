@@ -28,3 +28,7 @@ $ python3 manage.py migrate
 $ python3 manage.py runserver
 ```
 Сервис доступен по адресу: [localhost:8000](http://localhost:8000/)
+
+# Цели проекта
+
+Тестовое задание для https://idaproject.com/
