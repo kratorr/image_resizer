@@ -48,7 +48,6 @@ class ResizeForm(forms.Form):
     height = forms.IntegerField(label='Высота', required=False)
 
     def clean(self):
-        cleaned_data = super().clean()
         if not self.cleaned_data['width'] and not self.cleaned_data['height']:
             raise forms.ValidationError('Введите хотя бы одно значение')
 
