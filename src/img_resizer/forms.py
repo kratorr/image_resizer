@@ -49,14 +49,16 @@ class ResizeForm(forms.Form):
 
     def clean_width(self):
         data = self.cleaned_data['width']
-        print(data)
+        if data is None:
+            return data
         if int(data) <= 0:
             raise forms.ValidationError("Размер меньше или равен 0")
         return data
 
     def clean_height(self):
         data = self.cleaned_data['height']
-        print(data)
+        if data is None:
+            return data
         if int(data) <= 0:
             raise forms.ValidationError("Размер меньше или равен 0")
         return data
