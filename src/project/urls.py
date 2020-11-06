@@ -23,6 +23,6 @@ from img_resizer import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('', views.IndexView.as_view(), name='index'),
     path('img_resizer/', include('img_resizer.urls')),
 ] +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,21 +2,30 @@ import base64
 
 from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
+from django.views import View
 
 from .forms import ImageUploadForm, ResizeForm
 from .models import UploadedImage
 from .utils import download_image, resize_image
 
 
-def index(request):
-    images = UploadedImage.objects.all().order_by('-created_time')
-    context = {'images': images}
-    return render(request, 'img_resizer/index.html', context)
+class IndexView(View):
+    def get(self, request):
+        images = UploadedImage.objects.all().order_by('-created_time')
+        context = {'images': images}
+        return render(request, 'img_resizer/index.html', context)
 
 
-def upload(request):
-    if request.method == 'POST':        
-        form = ImageUploadForm(request.POST, request.FILES)
+class UploadView(View):
+    form_class = ImageUploadForm
+    tepmlate_name = 'img_resizer/upload_form.html'
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, self.tepmlate_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             if request.FILES:
                 new_image = UploadedImage(image=request.FILES['file_input'])
@@ -27,9 +36,6 @@ def upload(request):
                 new_image.image.save(file_name, ContentFile(downloaded_image), save=True)
 
             return redirect('image_view', image_hash=new_image.image_hash)
-    else:
-        form = ImageUploadForm()
-    return render(request, 'img_resizer/upload_form.html', {'form': form})
 
 
 def image_view(request, image_hash):
